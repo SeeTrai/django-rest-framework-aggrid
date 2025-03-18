@@ -1,6 +1,6 @@
 # django-rest-framework-aggrid
 
-[![PyPI version](https://badge.fury.io/py/django-rest-framework-aggrid.svg)](https://badge.fury.io/py/django-rest-framework-aggrid) [![Tests](https://github.com/seetrai/django-rest-framework-aggrid/actions/workflows/tests.yml/badge.svg)](https://github.com/seetrai/drf-aggrid/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://badge.fury.io/py/django-rest-framework-aggrid.svg)](https://badge.fury.io/py/django-rest-framework-aggrid) [![Tests](https://github.com/seetrai/django-rest-framework-aggrid/actions/workflows/tests.yml/badge.svg)](https://github.com/seetrai/django-rest-framework-aggrid/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This package provides wonderfully simple integration with [AG Grid](https://www.ag-grid.com) and [Django REST Framework](https://www.django-rest-framework.org/). It handles AG Grid's query parameters for filtering, sorting, and pagination, transforming them into Django ORM compatible filtering.
 
