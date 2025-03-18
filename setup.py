@@ -4,14 +4,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="drf-aggrid",
+    name="django-rest-framework-aggrid",
     version="0.1.0",
     author="Chris Trailer",
     author_email="chris.trailer@gmail.com",
     description="Django REST Framework Ag Grid ",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/seetrai/drf-aggrid",
+    url="https://github.com/seetrai/django-rest-framework-aggrid",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
