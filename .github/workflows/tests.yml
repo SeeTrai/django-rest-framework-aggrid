@@ -11,19 +11,15 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                python-version: [3.7, 3.8, 3.9, "3.10", "3.11"]
-                django-version: [3.2, 4.0, 4.1, 4.2]
-                drf-version: [3.12.0, 3.13.0, 3.14.0]
+                python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+                django-version: ["4.2", "5.0"]
+                drf-version: ["3.14.0"]
                 exclude:
-                    # Add exclusions for incompatible combinations
-                    - python-version: 3.7
-                      django-version: 4.0
-                    - python-version: 3.7
-                      django-version: 4.1
-                    - python-version: 3.7
-                      django-version: 4.2
-                    - python-version: 3.11
-                      django-version: 3.2
+                    # Django 5.0 requires Python 3.10+
+                    - python-version: "3.8"
+                      django-version: "5.0"
+                    - python-version: "3.9"
+                      django-version: "5.0"
 
         steps:
             - uses: actions/checkout@v3
