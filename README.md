@@ -35,7 +35,6 @@ pip install drf-aggrid
 ```python
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 
@@ -48,29 +47,14 @@ class YourModelViewSet(viewsets.ModelViewSet):
     queryset = YourModel.objects.all()
     serializer_class = YourModelSerializer
     permission_classes = [IsAuthenticated]
-    pagination_class = AgGridPagination
     filter_backends = [
         SearchFilter,
-        DjangoFilterBackend,
         AgGridFilterBackend,
     ]
     renderer_classes = [JSONRenderer, BrowsableAPIRenderer, AgGridRenderer]
     search_fields = ["name"]
-    filterset_fields = {
-        "created_at": ["exact", "gte", "lte"],
-        "is_active": ["exact"],
-    }
+    pagination_class = AgGridPagination
 
-    # Optional: Override get_paginated_response to ensure proper formatting
-    def get_paginated_response(self, data):
-        if hasattr(self, 'paginator') and isinstance(self.paginator, AgGridPagination):
-            return self.paginator.get_paginated_response(data)
-
-        return Response({
-            'rowCount': len(data),
-            'totalCount': len(data),
-            'rows': data
-        })
 ```
 
 ### Router Configuration
@@ -378,6 +362,39 @@ If you're experiencing issues with field names, make sure:
 1. You're using the correct field names in your ag-grid configuration. The field names should match the serializer field names.
 
 2. For nested fields, use dot notation in your ag-grid configuration (e.g., `event_type.name`). The filter backend will automatically convert these to Django ORM field names (e.g., `event_type__name`).
+
+## Automatic Pagination for Ag-Grid Requests
+
+If you want your views to automatically use `AgGridPagination` for ag-grid requests and standard pagination for other requests, you can use the `AutoAgGridPaginationMixin`:
+
+```python
+from drf_aggrid.mixins import AutoAgGridPaginationMixin
+from rest_framework import viewsets
+from rest_framework.pagination import PageNumberPagination
+
+class MyViewSet(AutoAgGridPaginationMixin, viewsets.ModelViewSet):
+    queryset = MyModel.objects.all()
+    serializer_class = MyModelSerializer
+    pagination_class = PageNumberPagination  # This will be used for non-aggrid requests
+```
+
+The `AutoAgGridPaginationMixin` will:
+
+1. Use `AgGridPagination` for requests with `?format=aggrid`
+2. Use your specified `pagination_class` for all other requests
+3. Restore the original pagination class after the response is generated
+
+You can also specify a different standard pagination class:
+
+```python
+class MyViewSet(AutoAgGridPaginationMixin, viewsets.ModelViewSet):
+    queryset = MyModel.objects.all()
+    serializer_class = MyModelSerializer
+    pagination_class = DefaultPaginationClass
+    standard_pagination_class = CustomPaginationClass  # This will override the default
+```
+
+This mixin makes it easy to support both ag-grid and standard API clients with the same view.
 
 ## Contributing
 

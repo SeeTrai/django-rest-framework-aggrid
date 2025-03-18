@@ -30,6 +30,16 @@ class AgGridPagination(PageNumberPagination):
     page_size_query_param = "page_size"
     max_page_size = 1000
 
+    # Store the total count (before any filtering)
+    total_count = 0
+
+    # Store the filtered count (after filtering)
+    count = 0
+
+    # Store the pagination parameters
+    start_row = None
+    end_row = None
+
     def paginate_queryset(self, queryset, request, view=None):
         """
         Paginate a queryset for ag-grid.
@@ -110,54 +120,38 @@ class AgGridPagination(PageNumberPagination):
 
     def is_aggrid_request(self, request):
         """
-        Check if the request is for ag-grid.
+        Determine if the request is an ag-grid request.
 
-        The request is considered for ag-grid if:
-        1. The 'format' query parameter is set to 'aggrid'
-        2. Any of the ag-grid specific parameters are present (filter, sort, startRow, endRow)
+        This method checks for ag-grid specific parameters in the request.
         """
-        format_param = request.query_params.get("format")
-        if format_param and format_param.lower() == "aggrid":
+        # Check if the format parameter is 'aggrid'
+        if request.query_params.get("format") == "aggrid":
             return True
 
         # Check for ag-grid specific parameters
-        aggrid_params = ["filter", "sort", "startRow", "endRow"]
-        for param in aggrid_params:
-            if param in request.query_params:
-                return True
+        has_filter = "filter" in request.query_params
+        has_sort = "sort" in request.query_params
+        has_pagination = (
+            "startRow" in request.query_params and "endRow" in request.query_params
+        )
 
-        return False
+        # Return True if any of the ag-grid specific parameters are present
+        return has_filter or has_sort or has_pagination
 
     def get_paginated_response(self, data):
         """
-        Return a paginated response in the format expected by ag-grid.
+        Return a paginated response for ag-grid.
+
+        This method formats the response in a way that ag-grid expects.
         """
-        # Get total and filtered counts
-        total_count = getattr(self, "total_count", self.count)
-        filtered_count = getattr(self, "count", len(data))
-
-        # Log response data for debugging
-        logger.debug(
-            "Paginated response: totalCount=%s, filteredCount=%s, dataLength=%s",
-            total_count,
-            filtered_count,
-            len(data),
+        # Format the response for ag-grid
+        return Response(
+            {
+                "rowCount": self.count,
+                "totalCount": self.total_count,
+                "rows": data,
+            }
         )
-
-        # Check if the request format is 'aggrid'
-        format_param = self.request.query_params.get("format")
-        if format_param and format_param.lower() == "aggrid":
-            # For format=aggrid, let the renderer handle the formatting
-            return Response(data)
-
-        # For direct ag-grid parameters, format the response here
-        response_data = {
-            "rowCount": filtered_count,
-            "totalCount": total_count,
-            "rows": data,
-        }
-
-        return Response(response_data)
 
     def get_count(self, queryset):
         """

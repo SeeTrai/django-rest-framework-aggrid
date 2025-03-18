@@ -4,12 +4,34 @@ Example usage of the AgGridFilterBackend and AgGridPagination.
 
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.response import Response
 
 from drf_aggrid import AgGridFilterBackend, AgGridPagination, AgGridRenderer
+from drf_aggrid.mixins import AgGridAutoPaginationMixin
+
+
+class ExampleModelWithAutoPaginationViewSet(
+    AgGridAutoPaginationMixin, viewsets.ModelViewSet
+):
+    """
+    ViewSet example using AutoAgGridPaginationMixin.
+
+    This ViewSet demonstrates how to use the AutoAgGridPaginationMixin to automatically
+    switch between standard pagination and AgGridPagination based on the request format.
+    """
+
+    # Replace with your model and serializer
+    # queryset = YourModel.objects.all()
+    # serializer_class = YourModelSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [
+        SearchFilter,
+        AgGridFilterBackend,
+    ]
+    renderer_classes = [JSONRenderer, BrowsableAPIRenderer, AgGridRenderer]
+    search_fields = ["name"]
 
 
 class ExampleModelAgGridViewSet(viewsets.ModelViewSet):
@@ -27,15 +49,10 @@ class ExampleModelAgGridViewSet(viewsets.ModelViewSet):
     pagination_class = AgGridPagination
     filter_backends = [
         SearchFilter,
-        DjangoFilterBackend,
         AgGridFilterBackend,
     ]
     renderer_classes = [JSONRenderer, BrowsableAPIRenderer, AgGridRenderer]
     search_fields = ["name"]
-    filterset_fields = {
-        "created_at": ["exact", "gte", "lte"],
-        "is_active": ["exact"],
-    }
 
     def get_paginated_response(self, data):
         """

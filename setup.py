@@ -8,10 +8,10 @@ setup(
     version="0.1.0",
     author="Chris Trailer",
     author_email="chris.trailer@gmail.com",
-    description="Django REST Framework filter backend for ag-grid integration",
+    description="Django REST Framework Ag Grid ",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/drf-aggrid",
+    url="https://github.com/seetrai/drf-aggrid",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
