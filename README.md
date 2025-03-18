@@ -1,29 +1,30 @@
-# drf-aggrid: ag-grid Filter Backend for Django REST Framework
+# django-rest-framework-aggrid
 
-[![PyPI version](https://badge.fury.io/py/drf-aggrid.svg)](https://badge.fury.io/py/drf-aggrid)
-[![Tests](https://github.com/seetrai/drf-aggrid/actions/workflows/tests.yml/badge.svg)](https://github.com/seetrai/drf-aggrid/actions/workflows/tests.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://badge.fury.io/py/django-rest-framework-aggrid.svg)](https://badge.fury.io/py/django-rest-framework-aggrid) [![Tests](https://github.com/seetrai/django-rest-framework-aggrid/actions/workflows/tests.yml/badge.svg)](https://github.com/seetrai/drf-aggrid/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This package provides a filter backend for ag-grid integration with Django REST Framework. It handles ag-grid's query parameters for filtering, sorting, and pagination, transforming them into Django ORM compatible filtering.
+This package provides wonderfully simple integration with [AG Grid](https://www.ag-grid.com) and [Django REST Framework](https://www.django-rest-framework.org/). It handles AG Grid's query parameters for filtering, sorting, and pagination, transforming them into Django ORM compatible filtering.
+
+**This is an early release and work-in-progress.**
 
 ## Installation
 
 ```bash
-pip install drf-aggrid
+pip install django-rest-framework-aggrid
 ```
 
 ## Features
 
--   Filtering based on ag-grid's `filter` parameter
--   Sorting based on ag-grid's `sort` parameter
--   Pagination based on ag-grid's `startRow` and `endRow` parameters
--   Response formatting in the format expected by ag-grid
+-   Filtering based on AG Grid's `filter` parameter
+-   Sorting based on AG Grid's `sort` parameter
+-   Pagination based on AG Grid's `startRow` and `endRow` parameters
+-   Response formatting in the format expected by AG Grid
 -   Support for `format=aggrid` query parameter to activate the filter backend
 -   Automatic conversion of dot notation field names to Django ORM field names
 
 ## Components
 
 -   `AgGridFilterBackend`: A filter backend that handles ag-grid's query parameters
+-   `AgGridAutoPaginationMixin`: A mixin to automatically handle pagination
 -   `AgGridPaginationMixin`: A mixin for views that use the `AgGridFilterBackend`
 -   `AgGridPagination`: A pagination class that handles ag-grid's pagination parameters
 -   `AgGridRenderer`: A custom renderer for ag-grid responses
@@ -31,6 +32,31 @@ pip install drf-aggrid
 ## Usage
 
 ### Basic Usage
+
+```python
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.filters import SearchFilter
+from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
+
+from your_app.models import YourModel
+from your_app.serializers import YourModelSerializer
+from drf_aggrid import AgGridFilterBackend, AgGridAutoPaginationMixin
+
+
+class YourModelViewSet(AgGridAutoPaginationMixin, viewsets.ModelViewSet):
+    queryset = YourModel.objects.all()
+    serializer_class = YourModelSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [
+        SearchFilter,
+        AgGridFilterBackend,
+    ]
+    search_fields = ["name"]
+
+```
+
+... or ...
 
 ```python
 from rest_framework import viewsets

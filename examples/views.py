@@ -30,7 +30,6 @@ class ExampleModelWithAutoPaginationViewSet(
         SearchFilter,
         AgGridFilterBackend,
     ]
-    renderer_classes = [JSONRenderer, BrowsableAPIRenderer, AgGridRenderer]
     search_fields = ["name"]
 
 
